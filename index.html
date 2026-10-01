@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evaluación de Convivencia - 9°</title>
+  <style>
+    :root {
+      --azul: #123a70;
+      --verde: #2e7d32;
+      --rojo: #c62828;
+      --amarillo: #f5b700;
+      --gris: #f3f5f7;
+      --texto: #1f2937;
+      --borde: #d9dee6;
+      --blanco: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #eef4ff, #f8fafc);
+      color: var(--texto);
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 30px auto;
+      background: var(--blanco);
+      border: 1px solid var(--borde);
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(18, 58, 112, 0.12);
+      overflow: hidden;
+    }
+
+    .header {
+      background: var(--azul);
+      color: var(--blanco);
+      padding: 24px 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 2vw, 2.3rem);
+    }
+
+    .header h2 {
+      margin: 8px 0 0;
+      font-size: clamp(1rem, 1.5vw, 1.5rem);
+      font-weight: 600;
+    }
+
+    .meta {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .meta span {
+      background: rgba(255,255,255,0.12);
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+
+    .content {
+      padding: 28px 30px 18px;
+    }
+
+    .timer-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f6f9ff;
+      border: 1px solid #dfe9fb;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    .timer {
+      color: var(--rojo);
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .instructions {
+      background: #f1f8f2;
+      border-left: 5px solid var(--verde);
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .question {
+      border: 1px solid var(--borde);
+      border-radius: 14px;
+      padding: 18px 18px 10px;
+      margin-bottom: 18px;
+      background: #fff;
+    }
+
+    .question h3 {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--borde);
+      border-radius: 10px;
+      background: #fafbfd;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .option:hover {
+      border-color: #9fb7dc;
+      background: #f4f8ff;
+    }
+
+    .option input {
+      accent-color: var(--azul);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .option label {
+      cursor: pointer;
+      width: 100%;
+      line-height: 1.4;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s;
+      padding: 12px 22px;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .submit-btn {
+      background: var(--azul);
+      color: var(--blanco);
+    }
+
+    .restart-btn {
+      background: #e7edf9;
+      color: var(--azul);
+    }
+
+    .result {
+      display: none;
+      margin-top: 24px;
+      border-radius: 12px;
+      padding: 18px 20px;
+      line-height: 1.6;
+      border: 1px solid var(--borde);
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result.success {
+      background: #edf9ef;
+      border-color: #bfdcbc;
+      color: #1d4d28;
+    }
+
+    .result.warning {
+      background: #fff8e6;
+      border-color: #f1d38c;
+      color: #6b4b00;
+    }
+
+    .result.danger {
+      background: #fff1f1;
+      border-color: #f3b9b9;
+      color: #7a1c1c;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      text-align: center;
+      color: #445267;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 640px) {
+      .content { padding: 20px 16px 12px; }
+      .header { padding: 18px 16px; }
+      .meta { gap: 10px; }
+      .timer-box {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .question h3 { font-size: 0.98rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>IED ARMANDO ESTRADA FLÓREZ</h1>
+      <h2>Evaluación de convivencia escolar</h2>
+      <div class="meta">
+        <span>Grado: 9°</span>
+        <span>Tiempo: 10 minutos</span>
+        <span>Tipo: Situaciones tipo I</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="timer-box">
+        <span>Tiempo restante</span>
+        <span id="timer" class="timer">10:00</span>
+      </div>
+
+      <div class="instructions">
+        Lee cada situación y marca la respuesta correcta. Solo una opción es válida.
+      </div>
+
+      <div id="quiz"></div>
+
+      <div class="actions">
+        <button class="submit-btn" id="submitBtn">Finalizar prueba</button>
+        <button class="restart-btn" id="restartBtn">Reiniciar</button>
+      </div>
+
+      <div id="result" class="result"></div>
+
+      <div class="footer-note">
+        Evaluación diseñada para favorecer la reflexión sobre respeto, tolerancia, empatía y convivencia escolar.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        q: "Durante la clase, un compañero se burla del aspecto físico de otro estudiante. ¿Qué es lo más apropiado hacer?",
+        options: [
+          "Reírse para no quedar mal frente a los demás.",
+          "Informar al docente y apoyar al estudiante que está siendo afectado.",
+          "Ignorar la situación porque no te involucra.",
+          "Hacer lo mismo para defenderse."
+        ],
+        correct: 1
+      },
+      {
+        q: "Un estudiante hace comentarios ofensivos en redes sociales sobre un compañero. ¿Cuál es la actitud correcta?",
+        options: [
+          "Responder con insultos.",
+          "Denunciar el caso y pedir respeto entre los estudiantes.",
+          "Ignorar porque es solo una broma.",
+          "No decir nada para evitar problemas."
+        ],
+        correct: 1
+      },
+      {
+        q: "En el salón, varios estudiantes excluyen a un compañero de un juego. ¿Qué debes hacer?",
+        options: [
+          "Invitarlo a participar para incluirlo.",
+          "Seguir la exclusión porque todos lo hacen.",
+          "Hablar mal de él para no quedar aislado.",
+          "No intervenir."
+        ],
+        correct: 0
+      },
+      {
+        q: "Un compañero te pide que no informes a la docente que está robando útiles escolares. ¿Qué harías?",
+        options: [
+          "Guardar silencio.",
+          "Hablar con él y luego reportar la situación si continúa.",
+          "Participar en la conducta para no quedar solo.",
+          "Decirle a todos lo que hizo."
+        ],
+        correct: 1
+      },
+      {
+        q: "Un estudiante se siente rechazado porque no habla el mismo idioma que el resto. ¿Cuál es la respuesta más respetuosa?",
+        options: [
+          "Hacerle sentir que debe adaptarse solo.",
+          "Mostrar empatía, paciencia y apoyo.",
+          "Evitar hablarle para no complicarse.",
+          "Burlarse de su forma de hablar."
+        ],
+        correct: 1
+      },
+      {
+        q: "En el descanso, ves que dos estudiantes se empujan y se insultan. ¿Qué debes hacer?",
+        options: [
+          "Intervenir con calma, pedir respeto y llamar a un adulto si es necesario.",
+          "Tomar partido por uno de ellos.",
+          "Salir del lugar para no meterte en problemas.",
+          "Repetir los insultos."
+        ],
+        correct: 0
+      },
+      {
+        q: "Un compañero te pide copiar en una prueba. ¿Qué harías?",
+        options: [
+          "Negarte y reportar la situación si se insiste.",
+          "Copiar para que no te critiquen.",
+          "Decirle a todos que no estudió.",
+          "No responder."
+        ],
+        correct: 0
+      },
+      {
+        q: "Ves que un estudiante se ríe de las dificultades de otro en clase. ¿Cuál acción es adecuada?",
+        options: [
+          "Aportar al problema porque todos hacen lo mismo.",
+          "Hablar con él y pedirle respeto.",
+          "Dejar pasar porque es una broma.",
+          "Hacerlo sentir peor."
+        ],
+        correct: 1
+      },
+      {
+        q: "Un compañero llega llorando porque otros lo burlaron por su forma de vestir. ¿Qué harías?",
+        options: [
+          "Lo consuelas y lo acompañas a buscar ayuda con un adulto.",
+          "Te ríes para que no se sienta raro.",
+          "Le dices que se calme y lo ignores.",
+          "Le dices que se calme solo."
+        ],
+        correct: 0
+      },
+      {
+        q: "Un estudiante usa apodos humillantes para referirse a otros. ¿Qué respuesta demuestra convivencia?",
+        options: [
+          "Participar en la broma para no ser rechazado.",
+          "Invitarlo a reflexionar y pedir respeto.",
+          "Ignorar porque es un problema de él.",
+          "Repetir los apodos."
+        ],
+        correct: 1
+      }
+    ];
+
+    const quizContainer = document.getElementById("quiz");
+    const timerEl = document.getElementById("timer");
+    const resultEl = document.getElementById("result");
+    const submitBtn = document.getElementById("submitBtn");
+    const restartBtn = document.getElementById("restartBtn");
+
+    let selectedAnswers = Array(questions.length).fill(null);
+    let timeLeft = 10 * 60;
+    let timerInterval;
+
+    function renderQuiz() {
+      quizContainer.innerHTML = "";
+
+      questions.forEach((q, index) => {
+        const card = document.createElement("div");
+        card.className = "question";
+
+        const title = document.createElement("h3");
+        title.textContent = `${index + 1}. ${q.q}`;
+        card.appendChild(title);
+
+        const optionsWrap = document.createElement("div");
+        optionsWrap.className = "options";
+
+        q.options.forEach((option, optionIndex) => {
+          const optionRow = document.createElement("div");
+          optionRow.className = "option";
+
+          const radio = document.createElement("input");
+          radio.type = "radio";
+          radio.name = `q${index}`;
+          radio.value = optionIndex;
+          radio.checked = selectedAnswers[index] === optionIndex;
+          radio.addEventListener("change", () => {
+            selectedAnswers[index] = optionIndex;
+          });
+
+          const label = document.createElement("label");
+          label.textContent = option;
+
+          optionRow.appendChild(radio);
+          optionRow.appendChild(label);
+          optionsWrap.appendChild(optionRow);
+        });
+
+        card.appendChild(optionsWrap);
+        quizContainer.appendChild(card);
+      });
+    }
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = formatTime(timeLeft);
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          finishQuiz(true);
+        }
+      }, 1000);
+    }
+
+    function getScore() {
+      let score = 0;
+      questions.forEach((q, index) => {
+        if (selectedAnswers[index] === q.correct) score++;
+      });
+      return score;
+    }
+
+    function finishQuiz(timeExpired = false) {
+      clearInterval(timerInterval);
+
+      const score = getScore();
+      let message = "";
+      let type = "";
+
+      if (score >= 9) {
+        message = `¡Excelente! Obtuviste ${score}/10. Demuestras una actitud muy responsable en convivencia y respeto.`;
+        type = "success";
+      } else if (score >= 7) {
+        message = `¡Muy bien! Obtuviste ${score}/10. Tienes buena comprensión de la convivencia escolar, pero aún puedes reforzar algunos aspectos.`;
+        type = "warning";
+      } else if (score >= 5) {
+        message = `Tu resultado fue ${score}/10. Debes reforzar el respeto, la empatía y la responsabilidad en la convivencia escolar.`;
+        type = "warning";
+      } else {
+        message = `Tu resultado fue ${score}/10. Es importante reflexionar sobre la convivencia, el respeto y la ayuda mutua en el colegio.`;
+        type = "danger";
+      }
+
+      if (timeExpired) {
+        message += " Se agotó el tiempo de la prueba.";
+      }
+
+      resultEl.className = `result show ${type}`;
+      resultEl.innerHTML = `<strong>Resultado:</strong><br>${message}`;
+
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = "0.6";
+      submitBtn.style.cursor = "not-allowed";
+    }
+
+    submitBtn.addEventListener("click", () => {
+      finishQuiz(false);
+    });
+
+    restartBtn.addEventListener("click", () => {
+      selectedAnswers = Array(questions.length).fill(null);
+      timeLeft = 10 * 60;
+      timerEl.textContent = formatTime(timeLeft);
+      resultEl.className = "result";
+      resultEl.innerHTML = "";
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = "1";
+      submitBtn.style.cursor = "pointer";
+      renderQuiz();
+      startTimer();
+    });
+
+    renderQuiz();
+    startTimer();
+  </script>
+</body>
+</html>
